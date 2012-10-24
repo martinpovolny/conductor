@@ -1,0 +1,86 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+
+require File.expand_path('./config/environment.rb')
+
+def load_costs
+  inputs = ActiveSupport::JSON.decode(`~/ec2instancespricing/ec2instancespricing.py --type ondemand --filter-os-type linux --format json`)
+  
+  p inputs
+  p inputs.keys
+  regions = inputs['regions'].collect {|r| r['region'] }
+  p regions
+  #["us-east-1", "us-west-2", "us-west-1", "eu-west-1", "ap-southeast-1", "ap-northeast-1", "sa-east-1"]
+  
+  ec2_profiles = inputs['regions'].find {|r| r['region']=='us-east-1' }
+  p ec2_profiles
+  
+  profile2price = {}
+  ec2_profiles['instanceTypes'].each { |p| profile2price[p['type']] = p }
+  
+  p "ec2 hash"
+  p profile2price
+  
+  p profile2price['t1.micro']['price']
+  
+  #HardwareProfile.find(:all).where(
+  
+  profiles = HardwareProfile.where("external_key is not NULL")
+  p "backend profiles"
+  p profiles
+  
+  # [#<HardwareProfile id: 1, external_key: "t1.micro", name: "t1.micro", memory_id: 1, storage_id: 2, cpu_id: 3, architecture_id: 4, provider_id: 1, lock_version: 0, created_at: "2012-10-19 13:52:02", updated_at: "2012-10-19 13:52:02">,
+  
+  Cost.delete_all
+  
+  profiles.each { |profile|
+    p '*' * 20
+    p ek = profile.external_key
+    p ec2prof = profile2price[ek]
+    p ec2prof['price']
+  
+    cost = Cost.create!(
+      :chargeable_id   => profile.id,
+      :chargeable_type => 1, #:hardware_profile,
+      # currency        => 'USD',
+      :price             => BigDecimal( ec2prof['price'].to_s ),
+      :valid_from        => Time.now() - 10.days, # FIXME
+      :valid_to          => nil
+    )
+  }
+  
+  p Cost.find(:all)
+end
+
+load_costs
+
+require '/home/martin/.gem/ruby/1.9.1/gems/simple-decorator-0.2.0/lib/simple_decorator.rb'
+module CostEngine
+  module Decorators
+
+class InstanceMatch < SimpleDecorator
+  def cost
+    #p hp_id = @component.hardware_profile_id
+    #p @component.hardware_profile
+
+    match    = @component
+    hwp      = @component.hardware_profile
+    instance = @component.instance
+
+    [:time_last_pending, :time_last_running, :time_last_shutting_down, :time_last_stopped ].each { |meth| p [ meth.to_s, instance.send(meth) ] }
+    
+    p [match, hwp, instance]
+
+    cost = Cost.find_by_chargeable_and_time_range( 1, hwp.id, instance[:time_last_running], instance[:time_last_stopped] )
+
+    p ['cost', cost.price]
+    return 1
+  end
+end
+
+  end
+end
+
+instance = CostEngine::Decorators::InstanceMatch.new( InstanceMatch.find(:all)[0] )
+p instance.cost
+p instance

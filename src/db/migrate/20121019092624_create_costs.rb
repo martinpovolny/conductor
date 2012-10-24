@@ -5,6 +5,7 @@ class CreateCosts < ActiveRecord::Migration
       t.integer :chargeable_type
       t.datetime :valid_from
       t.datetime :valid_to
+      t.decimal :price, :precision=>8, :scale=>3
 
       t.timestamps
     end

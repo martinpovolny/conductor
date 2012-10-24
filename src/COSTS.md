@@ -56,6 +56,36 @@ provider <--- 1:n ---> chargeable (backend hw_profile) <--- 1:1 ----> cost
 generally:
 provider <--- 1:n ---> chargeable (backend hw_profile) <--- 1:n ----> cost
 
+ Changes in Conductor data model:
+ --------------------------------
+
+  investigate history! -- 
+	where is the run history stored?
+		instance( time_last_running, time_last_stopped ) -- the instance remains the same, the 
+		instance_match gets created new, but missing the atributes
+
+	probably have to add start/stop time to InstanceMatch model
+
+  
+ Integrating Costs into Conductor routines
+ -----------------------------------------
+ 
+ a) via Decorator pattern
+
+	instance_match = CostEngine::Decorators::InstanceMatch.new( InstanceMatch.find(:all)[0] )
+	p instance_match.cost
+ 
+ b) extend class with Mixin
+	
+	class InstanceMatch
+	  extend CostEngine::Mixins::InstanceMatch
+	end
+
+	instance_match.cost
+
+ both a) b) introduce dependance Conductor ==> CostEngine thank to late binding
+	
+
 Placement in the UI
 -------------------
 
@@ -76,9 +106,13 @@ Tech Notes
    cost_id
    chargeable_type  { :hardware_profile, :bandwidth, :storage ... }
    chargeable_id    link to hw_profile or other resource representation
-   unit?
+   unit?	    hour, GB
+   bill_unit	    :hour, :minute, :wall_clk_hour ?	--> billing strategy?
+	
    valid_from
    valid_to
+   currency?
+   price
 
  constraints:
    chargeable_id, chargeable_type is unique in given range (valid_from, valid_to)
@@ -114,7 +148,7 @@ cost and provide a form to enter the costs.
 There's no official API for getting cost information.
 
 EC2 has an unofficial page that serves basic cost information in JSON. EC2 also
-provide billing information in form of CSV files. Further means of retrieving
+provides billing information in form of CSV files. Further means of retrieving
 cost and billing information have to be researched.
 
 We probably should include some values from the most popular providers in the
