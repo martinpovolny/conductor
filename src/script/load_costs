@@ -56,6 +56,25 @@ load_costs
 
 require '/home/martin/.gem/ruby/1.9.1/gems/simple-decorator-0.2.0/lib/simple_decorator.rb'
 module CostEngine
+  # implements billing model
+  #   pay per day/hour/minute/wallclock hour
+  #   par per start/stop/whatever
+  module BillingModel
+    class WallClockHour
+      def self.calculate( price_per_hour, start_t, end_t )
+        start_t = start_t.change( :min=> 1  )
+        end_t   = end_t.change(   :min=> 59 )
+        price_per_hour * ((end_t-start_t + 3600) / 3600).to_i
+      end
+    end
+
+    class Hour
+      def self.calculate( price_per_hour, start_t, end_t )
+        price_per_hour * ((end_t-start_t + 3600) / 3600).to_i
+      end
+    end
+  end
+
   module Decorators
 
 class InstanceMatch < SimpleDecorator
@@ -73,14 +92,16 @@ class InstanceMatch < SimpleDecorator
 
     cost = Cost.find_by_chargeable_and_time_range( 1, hwp.id, instance[:time_last_running], instance[:time_last_stopped] )
 
-    p ['cost', cost.price]
-    return 1
+    BillingModel::WallClockHour.calculate( cost.price, instance[:time_last_running], instance[:time_last_stopped] )
+
+    #p ['cost', cost.price]
+    #return 1
   end
 end
 
   end
 end
 
-instance = CostEngine::Decorators::InstanceMatch.new( InstanceMatch.find(:all)[0] )
-p instance.cost
-p instance
+instance_match = CostEngine::Decorators::InstanceMatch.new( InstanceMatch.find(:all)[0] )
+p instance_match
+p instance_match.cost.to_f

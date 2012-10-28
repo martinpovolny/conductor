@@ -17,13 +17,15 @@ Design.
 Some Use Cases
 --------------
 
-* As a user I want to see cost estimates of deployables to run on matching providers.
-* As a manager I want so see how much did the running of each deployable and instance cost and how it was estimated. 
-* As an administrator I want to assign costs to each hw profile at given provider.
+* As an administrator, I want to assign costs to a provider's hardware profiles
+* As a user, I want to see costs for my running instances and deployables, and for instances and deployables which have run previously.
+* As a manager, I want to see costs for all users' running instances and deployables, and for instances and deployables which have run previously
+* As an administrator, I want to see costs of running a deployable on available providers
+
 
 Future usecases: 
 * As a manager I want Conductor to select providers based on cost estimates.
-* As a user I want Conductor to automaticaly download costs from providers.
+* As an administrator I want Conductor to automaticaly download costs from providers.
 
 Design
 ------
@@ -83,7 +85,10 @@ provider <--- 1:n ---> chargeable (backend hw_profile) <--- 1:n ----> cost
 
 	instance_match.cost
 
- both a) b) introduce dependance Conductor ==> CostEngine thank to late binding
+ c) more ways to do that...
+
+ both a) b) introduce dependance Conductor ==> CostEngine thank to late binding 
+ b) requires less change do Conductor to use the cost (mostly you can just change Views wheres with 
 	
 
 Placement in the UI
@@ -104,10 +109,10 @@ Tech Notes
 
  costs
    cost_id
-   chargeable_type  { :hardware_profile, :bandwidth, :storage ... }
+   chargeable_type  ( hardware_profile | bandwidth | storage ... )
    chargeable_id    link to hw_profile or other resource representation
    unit?	    hour, GB
-   bill_unit	    :hour, :minute, :wall_clk_hour ?	--> billing strategy?
+   billing_strategy per_hour, per_minute, per_wall_clk_hour ? (to support EC2 at least per_wall_clk_hour is needed)
 	
    valid_from
    valid_to
@@ -127,8 +132,10 @@ API
     get cost of an chargeable (hardware profile) at given time
 
  Conductor integration:
+  hardware_profile.cost
+    hom much does a unit of run of this hardware_profile cost?
 
-  get_cost_for_instance( instance_id )
+  instance_match.cost / instance.cost
     how much did this instance cost?
   
   get_cost_history( deployable )
