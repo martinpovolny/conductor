@@ -3,7 +3,7 @@
 
 require File.expand_path('./config/environment.rb')
 
-def load_costs
+def load_costs_ec2
   inputs = ActiveSupport::JSON.decode(`~/ec2instancespricing/ec2instancespricing.py --type ondemand --filter-os-type linux --format json`)
   
   p inputs
@@ -37,22 +37,40 @@ def load_costs
     p '*' * 20
     p ek = profile.external_key
     p ec2prof = profile2price[ek]
-    p ec2prof['price']
+
+    unless ec2prof.nil?
+      p ec2prof['price']
   
-    cost = Cost.create!(
-      :chargeable_id   => profile.id,
-      :chargeable_type => 1, #:hardware_profile,
-      # currency        => 'USD',
-      :price             => BigDecimal( ec2prof['price'].to_s ),
-      :valid_from        => Time.now() - 10.days, # FIXME
-      :valid_to          => nil
-    )
+      cost = Cost.create!(
+        :chargeable_id   => profile.id,
+        :chargeable_type => 1, #:hardware_profile,
+        # currency        => 'USD',
+        :price             => BigDecimal( ec2prof['price'].to_s ),
+        :valid_from        => Time.now() - 10.days, # FIXME
+        :valid_to          => nil
+      )
+    end
   }
   
   p Cost.find(:all)
 end
 
-load_costs
+def load_costs_mock
+  ProviderType.find_by_deltacloud_driver('mock').providers.each do |provider|
+    provider.hardware_profiles.each do |profile|
+      cost = Cost.create!(
+        :chargeable_id   => profile.id,
+        :chargeable_type => 1, #:hardware_profile,
+        :price             => BigDecimal( 1 ),
+        :valid_from        => Time.now() - 100.days, # FIXME
+        :valid_to          => nil
+      )
+    end
+  end
+end
+
+#load_costs_ec2
+#load_costs_mock
 
 require '/home/martin/.gem/ruby/1.9.1/gems/simple-decorator-0.2.0/lib/simple_decorator.rb'
 module CostEngine
@@ -86,22 +104,46 @@ class InstanceMatch < SimpleDecorator
     hwp      = @component.hardware_profile
     instance = @component.instance
 
-    [:time_last_pending, :time_last_running, :time_last_shutting_down, :time_last_stopped ].each { |meth| p [ meth.to_s, instance.send(meth) ] }
-    
-    p [match, hwp, instance]
+    #[:time_last_pending, :time_last_running, :time_last_shutting_down, :time_last_stopped ].each { |meth| p [ meth.to_s, instance.send(meth) ] }
+    #p [match, hwp, instance]
 
-    cost = Cost.find_by_chargeable_and_time_range( 1, hwp.id, instance[:time_last_running], instance[:time_last_stopped] )
+    start = instance[:time_last_running]
+    stop  = instance[:time_last_stopped] || Time.now
 
-    BillingModel::WallClockHour.calculate( cost.price, instance[:time_last_running], instance[:time_last_stopped] )
+    cost = Cost.find_by_chargeable_and_time_range( 1, hwp.id, start, stop )
 
-    #p ['cost', cost.price]
-    #return 1
+    BillingModel::WallClockHour.calculate( cost.price, start, stop )
+  end
+end
+
+class Instance < SimpleDecorator
+  def cost
+    # FIXME: kdy ma Instance vice InstanceMatches
+    CostEngine::Decorators::InstanceMatch.new( @component.instance_matches[0] ).cost
+  end
+end
+
+class Deployment < SimpleDecorator
+  def cost
+    @component.instances.inject(0) { |sum, instance| 
+      sum + CostEngine::Decorators::Instance.new( instance ).cost
+    }
   end
 end
 
   end
 end
 
-instance_match = CostEngine::Decorators::InstanceMatch.new( InstanceMatch.find(:all)[0] )
-p instance_match
-p instance_match.cost.to_f
+# instance_match = CostEngine::Decorators::InstanceMatch.new( InstanceMatch.find(:all)[0] )
+# p ['instance_match', instance_match.cost.to_f]
+# 
+# #instance = CostEngine::Decorators::Instance.new( Instance.find(:all)[0] )
+# instance = CostEngine::Decorators::Instance.new( Instance.find(1) )
+# p ['instance', instance.cost.to_f]
+
+deployment = CostEngine::Decorators::Deployment.new( Deployment.find(1) )
+p ['deployment', deployment.cost.to_f]
+
+Deployment.find(:all).collect { |d| CostEngine::Decorators::Deployment.new(d) }.each { |d|
+  puts "#{d.id}: #{d.cost}"
+}
