@@ -13,7 +13,7 @@
 #     "costs_pkey" PRIMARY KEY, btree (id)
 
 class Cost < ActiveRecord::Base
-  attr_accessible :chargeable_id, :chargeable_type, :valid_from, :valid_to, :price
+  attr_accessible :chargeable_id, :chargeable_type, :valid_from, :valid_to, :price, :billing_model
 
   def self.find_by_chargeable_and_time_range( ch_type, ch_id, from, to )
     #p ['find_by_chargeable_and_time_range', ch_type, ch_id, from, to ]
