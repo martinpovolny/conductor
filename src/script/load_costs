@@ -141,6 +141,7 @@ require File.expand_path('./config/environment.rb')
 Cost.delete_all
 CostEngine::Loaders::Mock.init_profiles
 CostEngine::Loaders::EC2.init_profiles
+CostEngine::Loaders::RHEVM.init_profiles
 
 #CostEngine.infect_models # done in confin/initializers/cost_engine.rb
 

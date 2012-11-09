@@ -25,4 +25,8 @@ class Cost < ActiveRecord::Base
     # assert( cost_candidates.length <= 1 )
     cost_candidates[0]
   end
+
+  def calculate( start, stop )
+    CostEngine::BillingModel::MODELS[billing_model].calculate( price, start, stop )
+  end
 end
