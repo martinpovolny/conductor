@@ -71,12 +71,16 @@ Conductor::Application.routes.draw do
   # Note: This route will make all actions in every controller accessible via GET requests.
   # match ':controller(/:action(/:id(.:format)))'
 
-  resource :user_session
+  resource :user_sessions
   match 'login',       :to => 'user_sessions#new',     :as => 'login'
   match 'logout',      :to => 'user_sessions#destroy', :as => 'logout'
   match 'register',    :to => 'users#new',             :as => 'register'
 
   resource  'account', :to => 'users'
+
+  resources :password_resets, :only => [:create, :edit, :update]
+  resources :username_recoveries, :only => [:create]
+
   resources :templates
   resources :permissions do
     collection do
@@ -302,6 +306,7 @@ Conductor::Application.routes.draw do
       resources :provider_accounts, :controller => "pool_families_to_provider_accounts_associations", :only => [:index, :show, :update, :destroy]
     end
     resources :catalogs, :only => [:index, :show, :create, :update, :destroy]
+    resources :provider_realms, :only => [:index, :show]
   end
 
   #match 'matching_profiles', :to => '/hardware_profiles/matching_profiles/:hardware_profile_id/provider/:provider_id', :controller => 'hardware_profiles', :action => 'matching_profiles', :conditions => { :method => :get }, :as =>'matching_profiles'

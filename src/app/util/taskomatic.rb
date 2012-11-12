@@ -149,16 +149,10 @@ module Taskomatic
 
     overrides = HardwareProfile.generate_override_property_values(instance.hardware_profile, match.hardware_profile)
 
-    #ihwp = InstanceHwp.create( overrides ) FIXME
-    ihwp = InstanceHwp.create(
-      :memory       => overrides[:memory],
-      :cpu          => overrides[:cpu],
-      :architecture => overrides[:architecture],
-      :storage      => overrides[:storage],
-    )
+    ihwp = InstanceHwp.new( overrides )
     ihwp.hardware_profile = match.hardware_profile
-    instance.instance_hwp = ihwp
     ihwp.save
+    instance.instance_hwp = ihwp
 
     client_args = {:image_id => match.provider_image,
                   :name => instance.name.tr("/", "-"),
