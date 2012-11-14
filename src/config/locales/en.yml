@@ -697,6 +697,7 @@ en:
       name: Name
       unit: Unit
       min_value: Minimum Value
+      cost: Cost
     provider_hwp_headers:
       provider_name: Provider Name
       hwp_name: Hardware Profile Name
@@ -704,6 +705,7 @@ en:
       memory: Memory
       storage: Storage
       virtual_cpu: Virtual CPU
+      price: Price
     form:
       check_matches: Check Matches
     history:
@@ -718,6 +720,7 @@ en:
     edit:
       cancel_editing: Cancel Editing
       edit_hwp: Edit Hardware Profile
+      edit_hwp_cost: Assing Costs to Hardware Profile
     new:
       new_hwp: New Hardware Profile
     show:

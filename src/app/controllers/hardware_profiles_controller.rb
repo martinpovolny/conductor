@@ -18,7 +18,7 @@ class HardwareProfilesController < ApplicationController
   before_filter :require_user
   before_filter :load_hardware_profiles, :only => [:index, :show]
   before_filter :setup_new_hardware_profile, :only => [:new]
-  before_filter :setup_hardware_profile, :only => [:new, :create, :matching_provider_hardware_profiles, :edit, :update]
+  before_filter :setup_hardware_profile, :only => [:new, :create, :matching_provider_hardware_profiles, :edit, :update, :edit_cost]
 
   def index
     @title = t('hardware_profiles.hardware_profiles')
@@ -162,6 +162,19 @@ class HardwareProfilesController < ApplicationController
     find_matching_provider_hardware_profiles
   end
 
+  def edit_cost
+    unless @hardware_profile
+      @hardware_profile = HardwareProfile.find(params[:id])
+    end
+    require_privilege(Privilege::MODIFY, @hardware_profile)
+    @title = @hardware_profile.name.titlecase
+    unless @hardware_profile.provider_hardware_profile?
+      flash[:warning] = t "hardware_profiles.flash.warning.cannot_assign_cost_to_frontend_hwp"
+      redirect_to hardware_profile_path(@hardware_profile)
+      return
+    end
+  end
+
   def update
     if params[:id]
       @hardware_profile = HardwareProfile.find(params[:id])
@@ -228,7 +241,8 @@ class HardwareProfilesController < ApplicationController
     @properties_header = [
       { :name => t('hardware_profiles.properties_headers.name'), :sort_attr => :name},
       { :name => t('hardware_profiles.properties_headers.unit'), :sort_attr => :unit},
-      { :name => t('hardware_profiles.properties_headers.min_value'), :sort_attr => :value}]
+      { :name => t('hardware_profiles.properties_headers.min_value'), :sort_attr => :value},
+      { :name => t('hardware_profiles.properties_headers.cost'), :sort_attr => :value}]
     @hwp_properties = [@hardware_profile.memory, @hardware_profile.cpu, @hardware_profile.storage, @hardware_profile.architecture]
   end
 
@@ -240,7 +254,8 @@ class HardwareProfilesController < ApplicationController
       { :name => t('hardware_profiles.provider_hwp_headers.architecture'), :sort_attr => :architecture },
       { :name => t('hardware_profiles.provider_hwp_headers.memory'), :sort_attr => :memory},
       { :name => t('hardware_profiles.provider_hwp_headers.storage'), :sort_attr => :storage },
-      { :name => t('hardware_profiles.provider_hwp_headers.virtual_cpu'), :sort_attr => :cpu}
+      { :name => t('hardware_profiles.provider_hwp_headers.virtual_cpu'), :sort_attr => :cpu},
+      { :name => t('hardware_profiles.provider_hwp_headers.price'), :sort_attr => :price}
     ]
 
     begin

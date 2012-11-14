@@ -7,6 +7,8 @@
       - if check_privilege(Privilege::MODIFY, @hardware_profile) && !@hardware_profile.provider_hardware_profile?
         = link_to t('edit'), edit_hardware_profile_path(@hardware_profile), :class => 'button', :id => 'edit_button'
         = button_to t('delete'), hardware_profile_path(@hardware_profile), :method => :delete, :confirm => t('general.delete_confirmation'), :class => 'button danger'
+      - if check_privilege(Privilege::MODIFY, @hardware_profile) && @hardware_profile.provider_hardware_profile?
+        = link_to t('edit cost'), edit_cost_hardware_profile_path(@hardware_profile), :class => 'button', :id => 'edit_cost_button'
   %h1.hardware_profiles= @title
 %section.content-section.hardware_profile
   %header
@@ -26,5 +28,16 @@
             =hwpp.unit.nil? ? "n/a" : hwpp.unit
           %td
             =hwpp.value.nil? ? "n/a" : hwpp.value
+          %td
+            =hwpp.price.nil? ? "n/a" : hwpp.price 
+
+  - if @hardware_profile.provider_hardware_profile?
+    %h2=t 'price'
+    %table.flat
+      %thead
+        %tr
+          %td
+            =@hardware_profile.price
+
 - unless @hardware_profile.provider_hardware_profile?
   = render :partial => 'matching_provider_hardware_profiles'

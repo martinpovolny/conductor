@@ -149,6 +149,9 @@ Conductor::Application.routes.draw do
     delete 'multi_destroy', :on => :collection
     post :filter, :on => :collection
     post :matching_provider_hardware_profiles, :on => :collection
+    member do
+      get 'edit_cost'
+    end
   end
 
   resources :providers do
