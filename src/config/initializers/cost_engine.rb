@@ -1,4 +1,4 @@
-$: << '../../costengine/lib/'
+#$: << '../../costengine/lib/'
 require 'costengine'
 
 CostEngine.infect_models

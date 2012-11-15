@@ -699,6 +699,7 @@ en:
       unit: Unit
       min_value: Minimum Value
       cost: Cost
+      billing_model: Billing Model
     provider_hwp_headers:
       provider_name: Provider Name
       hwp_name: Hardware Profile Name
@@ -706,7 +707,7 @@ en:
       memory: Memory
       storage: Storage
       virtual_cpu: Virtual CPU
-      price: Price
+      cost: Cost
     form:
       check_matches: Check Matches
     history:
@@ -732,6 +733,7 @@ en:
       notice:
         deleted: "Hardware profile was deleted"
         updated: "Hardware Profile updated"
+        cost_updated: "Hardware Profile cost updated"
         more_deleted:
           one: Hardware Profile %{deleted} was deleted.
           other: Hardware Profiles %{deleted} were deleted.

@@ -18,7 +18,7 @@ class HardwareProfilesController < ApplicationController
   before_filter :require_user
   before_filter :load_hardware_profiles, :only => [:index, :show]
   before_filter :setup_new_hardware_profile, :only => [:new]
-  before_filter :setup_hardware_profile, :only => [:new, :create, :matching_provider_hardware_profiles, :edit, :update, :edit_cost]
+  before_filter :setup_hardware_profile, :only => [:new, :create, :matching_provider_hardware_profiles, :edit, :update]
 
   def index
     @title = t('hardware_profiles.hardware_profiles')
@@ -167,11 +167,66 @@ class HardwareProfilesController < ApplicationController
       @hardware_profile = HardwareProfile.find(params[:id])
     end
     require_privilege(Privilege::MODIFY, @hardware_profile)
-    @title = @hardware_profile.name.titlecase
+
+    @hwp_cost = @hardware_profile.cost_now || Cost.new
+
+    @hwp_prop_costs = {}
+    HardwareProfile::chargeables.each { |what| 
+      @hwp_prop_costs[what] = @hardware_profile.send(what).cost_now || Cost.new
+    }
+
     unless @hardware_profile.provider_hardware_profile?
       flash[:warning] = t "hardware_profiles.flash.warning.cannot_assign_cost_to_frontend_hwp"
       redirect_to hardware_profile_path(@hardware_profile)
       return
+    end
+
+    @header  = [
+      { :name => t('hardware_profiles.properties_headers.name'),          :sort_attr => :name},
+      { :name => t('hardware_profiles.properties_headers.billing_model'), :sort_attr => :billing_model},
+      { :name => t('hardware_profiles.properties_headers.cost'),          :sort_attr => :cost}]
+    @title = @hardware_profile.name.titlecase
+  end
+
+  def update_cost
+    unless params[:id]
+      redirect_to hardware_profiles_path
+    end
+
+    @hardware_profile = HardwareProfile.find(params[:id])
+    require_privilege(Privilege::MODIFY, @hardware_profile)
+
+    # terminate costs that exist atm
+    @hardware_profile.close_costs
+
+    # set hardware profile cost
+    Cost.create!( 
+      :chargeable_id   => @hardware_profile.id,
+      :chargeable_type => CostEngine::CHARGEABLE_TYPES[:hardware_profile],
+      :price           => params[:cost][:price],
+      :valid_from      => Time.now(),
+      :valid_to        => nil,
+      :billing_model   => params[:cost][:billing_model]
+    )
+    
+    # set hardware profile property costs
+    HardwareProfile::chargeables.each do |type|
+      billing_model_param_name = type.to_s+'_billing_model'
+      Cost.create!(
+        :chargeable_id   => @hardware_profile.send((type.to_s+'_id').intern),
+        :chargeable_type => CostEngine::CHARGEABLE_TYPES[('hw_'+type.to_s).intern],
+        :price           => params[type.to_s+'_cost'],
+        :valid_from      => Time.now(),
+        :valid_to        => nil,
+        :billing_model   => params[billing_model_param_name]
+      ) unless params[billing_model_param_name] == CostEngine::BillingModel::NONE
+    end
+
+    unless @hardware_profile.save
+      render :action => 'edit_cost' and return
+    else
+      flash[:notice] = t"hardware_profiles.flash.notice.cost_updated"
+      redirect_to hardware_profile_path(@hardware_profile)
     end
   end
 
@@ -255,7 +310,7 @@ class HardwareProfilesController < ApplicationController
       { :name => t('hardware_profiles.provider_hwp_headers.memory'), :sort_attr => :memory},
       { :name => t('hardware_profiles.provider_hwp_headers.storage'), :sort_attr => :storage },
       { :name => t('hardware_profiles.provider_hwp_headers.virtual_cpu'), :sort_attr => :cpu},
-      { :name => t('hardware_profiles.provider_hwp_headers.price'), :sort_attr => :price}
+      { :name => t('hardware_profiles.provider_hwp_headers.cost'), :sort_attr => :cost}
     ]
 
     begin

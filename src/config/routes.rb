@@ -151,6 +151,7 @@ Conductor::Application.routes.draw do
     post :matching_provider_hardware_profiles, :on => :collection
     member do
       get 'edit_cost'
+      put 'update_cost'
     end
   end
 

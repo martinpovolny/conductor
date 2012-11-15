@@ -2,8 +2,11 @@
   = render 'layouts/error_messages', :object => @hardware_profile
 %fieldset
   .field
-    = hwp_form.label :name, :class => 'em'
-    = hwp_form.text_field :name, :class => 'em long'
+    = fields_for @hwp_cost do |cost_form|
+      = cost_form.label :profile_cost, :class => 'em'
+      = cost_form.text_field :price, :class => 'em long'
+      = cost_form.label :billing_model, :class => 'em'
+      = cost_form.select(:billing_model, options_for_select(CostEngine::BillingModel::options_for_select, @hwp_cost.billing_model))
 %fieldset
   %table
     %thead
@@ -11,16 +14,13 @@
         - @header.each do |header|
           %th
             = header[:name]
-    - [:memory, :cpu, :storage, :architecture].each do |type|
+    - HardwareProfile::chargeables.each do |type|
       = hwp_form.fields_for type do |hwpp_form|
         %tr
           %td= hwpp_form.text_field(:name, :readonly => "readonly")
-          %td= hwpp_form.text_field(:unit, :size => 5, :readonly => "readonly")
-          %td
-            -if type == :architecture
-              = hwpp_form.select("value", ["i386", "x86_64"], {})
-            -else
-              = hwpp_form.text_field(:value)
+          %td= select_tag( type.to_s + '_billing_model', 
+            options_for_select(CostEngine::BillingModel::options_for_select.no_parts.with_none, @hwp_prop_costs[type].billing_model ), {})
+          %td= text_field_tag( type.to_s + '_cost', @hwp_prop_costs[type].price )
 
 %fieldset.options
   = hwp_form.submit t('save'), :class => 'submit button primary', :id => 'save_button'
