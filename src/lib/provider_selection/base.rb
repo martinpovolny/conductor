@@ -55,17 +55,6 @@ module ProviderSelection
       pool = @instances.first.pool
       rank = Rank.new(pool)
 
-      #provider_accounts = find_common_provider_accounts.map do |provider_account|
-      #  provider_accountif provider_account.quota.can_start?(@instances)
-      #end.uniq.compact
-      
-      # FIXME: compact no longer needed; Q: is uniq needed? 
-      
-      #paccs_with_hwp = find_common_provider_accounts
-      #paccs_with_hwp.delete_if { |acc_hwp|
-      #  ! paccs_with_hwp.provider_account.quota.can_start?(@instances)
-      #}
-
       # Adding a priority of 100000 to the default priority group which contains
       # all the available provider accounts.
       # The user defined priority groups has a score between -100 and +100.
@@ -83,7 +72,6 @@ module ProviderSelection
           score = Match::LOWER_LIMIT
         end
 
-        # FIXME: need to add backendhardware_profile below VVVV
         default_priority_group.matches << Match.new(:provider_account => acc_with_hwp.provider_account,
                                                     :hardware_profile => acc_with_hwp.hardware_profile,
                                                     :score => score)
@@ -121,6 +109,7 @@ module ProviderSelection
     private
 
     ProviderWithProfile = Struct.new(:provider_account, :hardware_profile)
+
     class SetOfProviderWithProfile < Array
       def intersect!(set)
         provider_accounts = set.map(&:provider_account)
@@ -133,14 +122,11 @@ module ProviderSelection
         filter_instance_matches(instance)
       end
 
-      #result = []
       profiles = SetOfProviderWithProfile.new
       instance_matches_grouped_by_instances.each_with_index do |instance_matches, index|
         if index == 0
-          #result += instance_matches.map(&:provider_account)
           instance_matches.map { |im| profiles << ProviderWithProfile.new(im.provider_account, im.hardware_profile) }
         else
-          #result &= instance_matches.map(&:provider_account)
           profiles.intersect!(instance_matches.collect { |im| ProviderWithMatch.new(im.provider_account, im.hardware_profile) })
         end
       end
