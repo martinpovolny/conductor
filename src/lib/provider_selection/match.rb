@@ -60,4 +60,3 @@ module ProviderSelection
   end
 
 end
-
