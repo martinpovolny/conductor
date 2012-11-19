@@ -27,29 +27,13 @@ module ProviderSelection
     end
 
     def self.create_from_active_record(obj, allowed_matches)
-      Rails.logger.error( ['create_from_active_record', obj, allowed_matches].inspect )
       priority_group = PriorityGroup.new(obj.score)
 
       possible_provider_accounts = obj.all_provider_accounts
-      #allowed_provider_accounts = allowed_matches.map do |match|
-      #  match.provider_account
-      #end.uniq
-
-      #possible_provider_accounts &= allowed_provider_accounts
-
-      #allowed_matches
-
-      #return nil if possible_provider_accounts.empty?
-
-      #possible_provider_accounts.each do |provider_account|
-      #  priority_group.matches << Match.new(:provider_account => provider_account)
-      #end
-      
       priority_group.matches = allowed_matches.find_all { |match| 
         possible_provider_accounts.include?( match.provider_account )
       }
 
-      Rails.logger.error( ['create_from_active_record result', priority_group].inspect )
       priority_group
     end
 
