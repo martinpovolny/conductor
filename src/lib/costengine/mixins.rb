@@ -22,7 +22,7 @@ module CostEngine
       # lookup __today's__ cost or this __backend__ profile
       def price
         # FIXME: what about units?
-        Cost.find_by_chargeable_and_time_range(1, id, t=Time.now, t).price
+        ( Cost.find_by_chargeable_and_time_range(1, id, t=Time.now, t).price rescue nil )
       end
 
       def cost_now(t=Time.now)
@@ -61,6 +61,12 @@ module CostEngine
       end
     end
 
+    module InstanceMatch
+      def price
+        hardware_profile.price
+      end
+    end
+
     module InstanceHwp
       def cost
         start = instance[:time_last_running]
@@ -88,7 +94,6 @@ module CostEngine
          Cost.find_by_chargeable_type_and_chargeable_id(CHARGEABLE_TYPES[:hw_cpu],     hardware_profile.cpu_id,     start, stop),
          Cost.find_by_chargeable_type_and_chargeable_id(CHARGEABLE_TYPES[:hw_storage], hardware_profile.storage_id, start, stop)
         ]
-        p costs
 
         costs.inject(0) { |sum,acost| 
           p [sum, acost]
@@ -100,7 +105,7 @@ module CostEngine
     module Instance
       def cost
         #valid_match.cost
-        instance_hwp.cost
+        instance_hwp.cost rescue 0 # in the pasw instance_hwp was not set, so we rescue from that
       end
 
       #def valid_match

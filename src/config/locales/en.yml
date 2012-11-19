@@ -382,6 +382,7 @@ en:
       owner: Owner
       global_uptime: Global Uptime
       uptime_1st_instance: Uptime 1st Instance running
+      cost_estimate: Cost Estimate
     provider_services:
       list_of_services: List of services required by Deployment
     required_services:

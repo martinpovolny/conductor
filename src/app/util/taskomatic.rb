@@ -27,7 +27,7 @@ module Taskomatic
       task.instance.provider_account = match.provider_account
       task.instance.create_auth_key unless task.instance.instance_key
 
-      task.instance.instance_hwp = create_instance_hwp
+      task.instance.instance_hwp = create_instance_hwp(task.instance.hardware_profile, match.hardware_profile)
       dcloud_instance = create_dcloud_instance(task.instance, match)
 
       handle_dcloud_error(dcloud_instance)
@@ -144,11 +144,12 @@ module Taskomatic
     raise ex
   end
 
-  def self.create_instance_hwp
-    overrides = HardwareProfile.generate_override_property_values(instance.hardware_profile, match.hardware_profile)
+  def self.create_instance_hwp(frontend_hardware_profile, backend_hardware_profile)
+    overrides = HardwareProfile.generate_override_property_values(frontend_hardware_profile, backend_hardware_profile)
     ihwp = InstanceHwp.new(overrides)
-    ihwp.hardware_profile = match.hardware_profile
+    ihwp.hardware_profile = backend_hardware_profile
     ihwp.save!
+    ihwp
   end
 
   def self.create_dcloud_instance(instance, match)
