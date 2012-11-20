@@ -15,7 +15,7 @@
 #
 
 require File.join(File.dirname(__FILE__), 'strategy')
-#require File.join(File.dirname(__FILE__), 'config')
+require File.join(File.dirname(__FILE__), 'config')
 
 module ProviderSelection
   module Strategies
@@ -25,10 +25,10 @@ module ProviderSelection
 
         extend ProviderSelection::ChainableStrategyOptions::ClassMethods
 
-        #@properties = {
-        #    :edit_partial => 'penalty_for_failure/edit',
-        #    :config_klass => Config
-        #}
+        @properties = {
+            :edit_partial => 'cost_order/edit',
+            :config_klass => Config
+        }
 
       end
 

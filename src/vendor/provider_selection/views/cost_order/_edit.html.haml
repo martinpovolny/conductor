@@ -1,0 +1,9 @@
+.strategy-options
+  - if @config.errors.any?
+    = render 'layouts/error_messages', :object => @config
+
+  %fieldset
+    .field
+      = form.label(:impact, t('strategies.cost_order.views.edit.impact'))
+      .input
+        = form.select_tag(:impact, options_for_select([['Logaritmic', 1], ['Linear', 2], ['Polynomial', 3]]))

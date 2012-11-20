@@ -21,10 +21,29 @@ module ProviderSelection
       class Strategy
         include ProviderSelection::ChainableStrategy::InstanceMethods
 
+        @default_options = {
+          :impact => 1
+        }
+
+        def self.default_options
+          @default_options
+        end
+
+        def penalty_for_cost(hardware_profile,mode=:linear)
+          return 0 if (cost = hardware_profile.cost_now).nil?
+          case mode
+          when :linear
+            cost.price * 1000
+          when :logaritmic
+            Math.log(cost.price) * 1000
+          when :polynomial
+            cost.price**2 * 1000
+          end
+        end
+
         def calculate
           rank = @strategies.calculate
           Rails.logger.error( ['CostOrder::Strategy::calculate', rank] )
-
 
           # matching:
           #   lib/provider_selection/base.rb calls:
@@ -60,12 +79,11 @@ module ProviderSelection
           #
           #
 
-          ## Modify the score of each match in every priority groups
-          #rank.priority_groups.each do |priority_group|
-          #  priority_group.matches.each do |match|
-          #    match.penalize_by(failures_count[match.provider_account] * @options[:penalty_percentage])
-          #  end
-          #end
+          rank.priority_groups.each do |priority_group|
+            priority_group.matches.each do |match|
+              match.penalize_by(penalty_for_cost(match.hardware_profile))
+            end
+          end
 
           #return rank unless @options.has_key?(:failure_count_hard_limit)
 
