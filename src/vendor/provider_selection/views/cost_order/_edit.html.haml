@@ -6,4 +6,4 @@
     .field
       = form.label(:impact, t('strategies.cost_order.views.edit.impact'))
       .input
-        = form.select_tag(:impact, options_for_select([['Logaritmic', 1], ['Linear', 2], ['Polynomial', 3]]))
+        = form.select(:impact, options_for_select([['Logaritmic', 1], ['Linear', 2], ['Polynomial', 3]], @config.impact))
