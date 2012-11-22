@@ -28,11 +28,13 @@
             =hwpp.unit.nil? ? "n/a" : hwpp.unit
           %td
             =hwpp.value.nil? ? "n/a" : hwpp.value
-          %td
-            =hwpp.price.nil? ? "n/a" : hwpp.price 
+          - if @hardware_profile.provider_hardware_profile?
+            %td
+              =hwpp.price.nil? ? "n/a" : hwpp.price 
 
   - if @hardware_profile.provider_hardware_profile?
-    %h2=t 'cost'
+    %header
+      %h2=t 'cost'
     %table.flat
       %thead
         %tr

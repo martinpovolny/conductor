@@ -275,6 +275,7 @@ en:
   quota_used: Quota Used
   return_to: Return to
   properties: Properties
+  cost: Cost
   hw_profiles: HW Profiles
   services: Services
   history: History
@@ -725,6 +726,7 @@ en:
       cancel_editing: Cancel Editing
       edit_hwp: Edit Hardware Profile
       edit_hwp_cost: Assing Costs to Hardware Profile
+      edit_hwp_billing_model: Select Billing Model for Hardware Profile
     new:
       new_hwp: New Hardware Profile
     show:

@@ -9,8 +9,7 @@
 
 %section.content-section
   .content#priority-group-form
-    = form_for @config, :as => :config, :builder => ApplicationHelper::FormBuilderWithRequiredFields,
-               :url => save_strategy_options_pool_provider_selection_path(@pool, @strategy.name) do |form|
+    = form_for @config, :as => :config, :url => save_strategy_options_pool_provider_selection_path(@pool, @strategy.name) do |form|
       = render :partial => @edit_partial, :locals => { :form => form }
       %fieldset.options
         = form.submit(t('save'), :class => "submit button primary")

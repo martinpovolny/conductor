@@ -9,6 +9,10 @@ module CostEngine
       MODELS[model_num][:class]
     end
 
+    def self.find_name(model_num)
+      (MODELS[model_num][:name] rescue 'none')
+    end
+
     # FIXME/note: have to call gettext on these, probably at the view level?
     def self.options_for_select
       MODELS.inject(OptionsForSelect.new) { |options,(model_num,model)| options.merge!(model[:name] => model_num) }

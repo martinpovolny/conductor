@@ -31,17 +31,19 @@ module CostEngine
 
       # 'close' associated set of cost
       # that is set the time_to to now
-      def close_costs
+      def close_costs(all=true)
         hwp_cost = cost_now(t=Time.now)
-        Rails.logger.error(['hwp_cost', hwp_cost].inspect)
+        #Rails.logger.error(['hwp_cost', hwp_cost].inspect)
         hwp_cost.close unless hwp_cost.nil?
 
-        @hwp_prop_costs = {}
-        ::HardwareProfile::chargeables.each { |what| 
-          hwp_prop_cost = send(what).cost_now(t)
-          Rails.logger.error(['hwp_prop_cost', hwp_prop_cost].inspect)
-          hwp_prop_cost.close unless hwp_prop_cost.nil?
-        }
+        if all
+          @hwp_prop_costs = {}
+          ::HardwareProfile::chargeables.each { |what| 
+            hwp_prop_cost = send(what).cost_now(t)
+            #Rails.logger.error(['hwp_prop_cost', hwp_prop_cost].inspect)
+            hwp_prop_cost.close unless hwp_prop_cost.nil?
+          }
+        end
       end
 
     end
