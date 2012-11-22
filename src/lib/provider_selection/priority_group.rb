@@ -21,20 +21,23 @@ module ProviderSelection
     attr_accessor :matches
     attr_accessor :score
 
-    def initialize(score)
-      @matches = []
+    def initialize(score, matches=[])
       @score = score
+      @matches = matches
     end
 
     def self.create_from_active_record(obj, allowed_matches)
-      priority_group = PriorityGroup.new(obj.score)
-
       possible_provider_accounts = obj.all_provider_accounts
-      priority_group.matches = allowed_matches.find_all { |match| 
-        possible_provider_accounts.include?( match.provider_account )
-      }
 
-      priority_group
+      matches = []
+      allowed_matches.each do |match| 
+        if possible_provider_accounts.include?(match.provider_account)
+          matches << Match.new(:provider_account => match.provider_account,
+                               :hardware_profile => match.hardware_profile)
+        end
+      end
+
+      matches.empty? ? nil : PriorityGroup.new(obj.score, matches)
     end
 
     def match_exists?

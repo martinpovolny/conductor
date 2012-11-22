@@ -106,33 +106,30 @@ module ProviderSelection
       @strategy_chain
     end
 
+    ProviderAccWithHwp = Struct.new(:provider_account, :hardware_profile)
+
     private
-
-    ProviderWithProfile = Struct.new(:provider_account, :hardware_profile)
-
-    class SetOfProviderWithProfile < Array
-      def intersect!(set)
-        provider_accounts = set.map(&:provider_account)
-        self.delete_if{ |el| ! set.include?(el.provider_account) }
-      end
-    end
-
     def find_common_provider_accounts
+
       instance_matches_grouped_by_instances = @instances.map do |instance|
         filter_instance_matches(instance)
       end
 
-      profiles = SetOfProviderWithProfile.new
+      common_accounts = []
       instance_matches_grouped_by_instances.each_with_index do |instance_matches, index|
+        accounts = instance_matches.collect do |instance_match| 
+          ProviderAccWithHwp.new(instance_match.provider_account, instance_match.hardware_profile)
+        end
+
         if index == 0
-          instance_matches.map { |im| profiles << ProviderWithProfile.new(im.provider_account, im.hardware_profile) }
+          common_accounts = accounts
         else
-          profiles.intersect!(instance_matches.collect { |im| ProviderWithMatch.new(im.provider_account, im.hardware_profile) })
+          provider_accounts = accounts.map(&:provider_account)
+          common_accounts.delete_if{ |pair| ! provider_accounts.include?(pair.provider_account) }
         end
       end
 
-      Rails.logger.error( ['find_common_provider_accounts result', profiles].inspect )
-      profiles
+      common_accounts
     end
 
     def filter_instance_matches(instance)
