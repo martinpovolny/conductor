@@ -4,7 +4,9 @@ FactoryGirl.define do
   factory :cost do
     chargeable_id 1
     chargeable_type 1
-    valid_from "2012-10-19 11:26:25"
-    valid_to "2012-10-19 11:26:25"
+    price 0.1
+    valid_from Time.now
+    valid_to Time.now + 1.day
+    billing_model 1
   end
 end
