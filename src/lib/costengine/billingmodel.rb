@@ -3,7 +3,7 @@ module CostEngine
   # billing models
   class BillingModel
     public
-    NONE=0
+    NONE = 0
 
     def self.find(model_num)
       MODELS[model_num][:class]

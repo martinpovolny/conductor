@@ -5,13 +5,13 @@ require "costengine/loaders"
 
 module CostEngine
   def self.infect_models
-    InstanceMatch.send( :include, CostEngine::Mixins::InstanceMatch )
-    InstanceHwp.send( :include, CostEngine::Mixins::InstanceHwp )
-    Instance.send( :include, CostEngine::Mixins::Instance )
-    Deployment.send( :include, CostEngine::Mixins::Deployment )
-    HardwareProfile.send( :include, CostEngine::Mixins::HardwareProfile )
-    HardwareProfile.extend( CostEngine::Mixins::HardwareProfileClass )
-    HardwareProfileProperty.send( :include, CostEngine::Mixins::HardwareProfileProperty )
+    InstanceMatch.send(:include, CostEngine::Mixins::InstanceMatch)
+    InstanceHwp.send(:include, CostEngine::Mixins::InstanceHwp)
+    Instance.send(:include, CostEngine::Mixins::Instance)
+    Deployment.send(:include, CostEngine::Mixins::Deployment)
+    HardwareProfile.send(:include, CostEngine::Mixins::HardwareProfile)
+    HardwareProfile.extend(CostEngine::Mixins::HardwareProfileClass)
+    HardwareProfileProperty.send(:include, CostEngine::Mixins::HardwareProfileProperty)
   end
   
   CHARGEABLE_TYPES = { 
