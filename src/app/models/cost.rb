@@ -15,6 +15,18 @@
 class Cost < ActiveRecord::Base
   attr_accessible :chargeable_id, :chargeable_type, :valid_from, :valid_to, :price, :billing_model
 
+  validates_presense_of :chargeable_id, :chargeable_type, :billing_model, :valid_from
+  # valid_to might be null resulting in unlimited validity
+  # price might be null for PER_PART billing model
+  
+  validate :validate_by_billing_model
+
+  def validate_by_billing_model
+    if billing_model == CostEngine::BillingModel::PER_PART and price.blank?
+      errors.add(:base, "price cannot be blank")
+    end
+  end
+
   def self.find_by_chargeable_and_time_range(chargeable_type, chargeable_id, from, to)
     #cost_candidates = Cost.find_all_by_chargeable_type_and_chargeable_id(chargeable_type, chargeable_id)
     #cost_candidates = cost_candidates.find_all { |candidate| candidate.valid_from <= from and ( candidate.valid_to.nil? or candidate.valid_to >= to ) }

@@ -684,6 +684,7 @@ en:
       failed_to_disable: "Failed to disable %{strategy_name} strategy"
       config_successfully_saved: "Successfully updated %{strategy_name} strategy"
   hardware_profiles:
+    edit_cost: Edit Cost
     hardware: Hardware
     hardware_profile: Hardware Profile
     hardware_profiles: Hardware Profiles
@@ -725,7 +726,7 @@ en:
     edit:
       cancel_editing: Cancel Editing
       edit_hwp: Edit Hardware Profile
-      edit_hwp_cost: Assing Costs to Hardware Profile
+      edit_hwp_cost: Assign Costs to Hardware Profile
       edit_hwp_billing_model: Select Billing Model for Hardware Profile
     new:
       new_hwp: New Hardware Profile

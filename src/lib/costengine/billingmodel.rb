@@ -3,7 +3,8 @@ module CostEngine
   # billing models
   class BillingModel
     public
-    NONE = 0
+    NONE     = 0
+    PER_PART = 3
 
     def self.find(model_num)
       MODELS[model_num][:class]
@@ -38,8 +39,8 @@ module CostEngine
     #  * later may need per start/stop/whatever
     class WallClockHour
       def self.calculate(price_per_hour, start_t, end_t)
-        start_t = start_t.change( :min=> 1  )
-        end_t   = end_t.change(   :min=> 59 )
+        start_t = start_t.change(:min => 1)
+        end_t   = end_t.change(:min => 59)
         price_per_hour * ((end_t-start_t + 3600) / 3600).to_i
       end
       BillingModel::MODELS[1] = { 

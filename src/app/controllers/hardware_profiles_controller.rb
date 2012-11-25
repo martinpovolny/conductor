@@ -245,17 +245,18 @@ class HardwareProfilesController < ApplicationController
 
     #begin
       # set hardware profile cost
+      #cost_now = @hardware_profile.cost_now
       Cost.create!( 
         :chargeable_id   => @hardware_profile.id,
         :chargeable_type => CostEngine::CHARGEABLE_TYPES[:hardware_profile],
-        :price           => params[:cost][:price],
+        :price           => (params[:cost][:price] rescue 0),
         :valid_from      => Time.now(),
         :valid_to        => nil,
         :billing_model   => billing_model = params[:cost][:billing_model]
       )
       
-      if billing_model == 3
-        # set hardware profile property costs
+      if billing_model.to_i == 3
+        # set hardware profile properties costs
         HardwareProfile::chargeables.each do |type|
           billing_model_param_name = type.to_s+'_billing_model'
           Cost.create!(
@@ -349,7 +350,7 @@ class HardwareProfilesController < ApplicationController
 
   #TODO Update this method when moving to new HWP Model
   def find_matching_provider_hardware_profiles
-    @provider_hwps_header  = [
+    @provider_hwps_header = [
       { :name => t('hardware_profiles.provider_hwp_headers.provider_name'), :sort_attr => "provider.name" },
       { :name => t('hardware_profiles.provider_hwp_headers.hwp_name'), :sort_attr => :name },
       { :name => t('hardware_profiles.provider_hwp_headers.architecture'), :sort_attr => :architecture },

@@ -21,15 +21,13 @@ module CostEngine
               :chargeable_id   => profile.id,
               :chargeable_type => 1, #:hardware_profile,
               # currency        => 'USD',
-              :price             => BigDecimal( ec2prof['price'].to_s ),
-              :valid_from        => Time.now() - 100.days, # FIXME
-              :valid_to          => nil,
-              :billing_model     => 1
+              :price           => BigDecimal( ec2prof['price'].to_s ),
+              :valid_from      => Time.now() - 100.days, # FIXME
+              :valid_to        => nil,
+              :billing_model   => 1
             )
           end
         }
-        
-        #p Cost.find(:all)
       end
     end
   end
