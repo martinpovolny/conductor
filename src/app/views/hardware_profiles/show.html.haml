@@ -30,7 +30,7 @@
             =hwpp.value.nil? ? "n/a" : hwpp.value
           - if @hardware_profile.provider_hardware_profile?
             %td
-              =hwpp.price.nil? ? "n/a" : hwpp.price 
+              =hwpp.unit_price.nil? ? "n/a" : hwpp.unit_price 
 
   - if @hardware_profile.provider_hardware_profile?
     %header
@@ -39,7 +39,7 @@
       %thead
         %tr
           %td
-            =@hardware_profile.price
+            =@hardware_profile.unit_price.nil? ? "n/a" : @hardware_profile.unit_price
 
 - unless @hardware_profile.provider_hardware_profile?
   = render :partial => 'matching_provider_hardware_profiles'

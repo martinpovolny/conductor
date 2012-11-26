@@ -10,7 +10,7 @@ module CostEngine
               :price           => 0,
               :valid_from      => Time.now() - 100.days,
               :valid_to        => nil,
-              :billing_model   => 3
+              :billing_model   => 'per_property'
             )
             # create cost for mem, cpu, storage 
             
@@ -20,7 +20,7 @@ module CostEngine
               :price           => 0.2,
               :valid_from      => Time.now() - 100.days,
               :valid_to        => nil,
-              :billing_model   => 2
+              :billing_model   => 'hour'
             )
 
             Cost.create!(
@@ -29,7 +29,7 @@ module CostEngine
               :price           => 0.3,
               :valid_from      => Time.now() - 100.days,
               :valid_to        => nil,
-              :billing_model   => 2
+              :billing_model   => 'hour'
             )
 
             Cost.create!(
@@ -38,7 +38,7 @@ module CostEngine
               :price           => 0.5,
               :valid_from      => Time.now() - 100.days,
               :valid_to        => nil,
-              :billing_model   => 2
+              :billing_model   => 'hour'
             )
           end
         end

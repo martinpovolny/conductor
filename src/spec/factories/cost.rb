@@ -9,4 +9,5 @@ FactoryGirl.define do
     valid_to Time.now + 1.day
     billing_model 1
   end
+
 end

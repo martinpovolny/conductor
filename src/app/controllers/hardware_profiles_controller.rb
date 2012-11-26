@@ -197,9 +197,12 @@ class HardwareProfilesController < ApplicationController
     }
 
     @header  = [
-      { :name => t('hardware_profiles.properties_headers.name'),          :sort_attr => :name},
-      { :name => t('hardware_profiles.properties_headers.billing_model'), :sort_attr => :billing_model},
-      { :name => t('hardware_profiles.properties_headers.cost'),          :sort_attr => :cost}]
+      { :name => t('hardware_profiles.properties_headers.name'), 
+        :sort_attr => :name},
+      { :name => t('hardware_profiles.properties_headers.billing_model'),
+        :sort_attr => :billing_model},
+      { :name => t('hardware_profiles.properties_headers.cost'),
+        :sort_attr => :cost}]
     @title = @hardware_profile.name.titlecase
   end
 
@@ -266,7 +269,7 @@ class HardwareProfilesController < ApplicationController
             :valid_from      => Time.now(),
             :valid_to        => nil,
             :billing_model   => params[billing_model_param_name]
-          ) unless params[billing_model_param_name] == CostEngine::BillingModel::NONE
+          ) unless params[billing_model_param_name] == 'none'
         end
       end
 

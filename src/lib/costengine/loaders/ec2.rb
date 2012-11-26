@@ -24,7 +24,7 @@ module CostEngine
               :price           => BigDecimal( ec2prof['price'].to_s ),
               :valid_from      => Time.now() - 100.days, # FIXME
               :valid_to        => nil,
-              :billing_model   => 1
+              :billing_model   => 'wall_clock_hour'
             )
           end
         }

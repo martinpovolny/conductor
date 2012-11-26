@@ -59,9 +59,12 @@ Feature: Manage Hardware Profiles
     When I follow "m1-small"
     When I follow "m1-small"
     Then I should see "Cost"
-    And show me the page
     When I follow "edit_cost_button"
     Then I should see "Assign Costs to Hardware Profile"
+    When I follow "change_bm_button"
+    Then I should see "Select Billing Model for Hardware Profile"
+    When I press "save_button"
+    Then I should see "Hardware Profile cost updated"
 
 #  Scenario: Search for hardware profiles
 #    Given there are the following conductor hardware profiles:

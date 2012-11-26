@@ -10,7 +10,7 @@ module CostEngine
               :price             => 0.5+i, #BigDecimal( i.to_f+0.5 ),
               :valid_from        => Time.now() - 100.days, # FIXME
               :valid_to          => nil,
-              :billing_model     => 2
+              :billing_model     => 'hour'
             )
           end
         end

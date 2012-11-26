@@ -7,27 +7,14 @@ module CostEngine
     end
 
     module HardwareProfile
-      # calculate expected cost of run of this frontend hardware_profile
-      # at given provider
-      def cost_at_provider(provider)
-
-        # check if match exists
-        
-        # get matching 
-        # 1) frontend hardware provider and 
-        # 2) instance_hwp
-
-        # calculate price given backend hwp and instance_hwp
-      end
-
       # lookup __today's__ cost or this __backend__ profile
-      def price
+      def unit_price
         # FIXME: what about units?
-        (Cost.find_by_chargeable_and_time_range(1, id, t=Time.now, t).price rescue nil)
+        (Cost.for_chargeable_and_period(1, id, t=Time.now, t).price rescue nil)
       end
 
       def cost_now(t=Time.now)
-        Cost.find_by_chargeable_and_time_range(1, id, t, t)
+        Cost.for_chargeable_and_period(1, id, t, t)
       end
 
       # 'close' associated set of cost
@@ -43,7 +30,6 @@ module CostEngine
           end
         end
       end
-
     end
 
     module HardwareProfileProperty
@@ -52,12 +38,12 @@ module CostEngine
       end
 
       # lookup __today's__ cost or this __backend__ profile property
-      def price
-        Cost.find_by_chargeable_and_time_range(chargeable_type, id, t=Time.now, t).price rescue nil
+      def unit_price
+        Cost.for_chargeable_and_period(chargeable_type, id, t=Time.now, t).price rescue nil
       end
 
       def cost_now(t=Time.now)
-        Cost.find_by_chargeable_and_time_range(chargeable_type, id, t, t)
+        Cost.for_chargeable_and_period(chargeable_type, id, t, t)
       end
     end
 
@@ -68,18 +54,22 @@ module CostEngine
     end
 
     module InstanceHwp
+
+      # calculate cost estimate for an instance that was previously running or
+      # is running now
+      #
       def cost
         start = instance[:time_last_running]
         return -1 if start.nil?
         stop = instance[:time_last_stopped] || Time.now
     
-        Rails.logger.debug(['searching cost for', hardware_profile.external_key, hardware_profile.id])
-        Rails.logger.debug(['instance_hwp', self])
-        cost = Cost.find_by_chargeable_and_time_range( 1, hardware_profile.id, start, stop )
+        Rails.logger.debug('search cost for hwp: '+hardware_profile.inspect)
+        Rails.logger.debug('instance_hwp:'+self.inspect)
+        cost = Cost.for_chargeable_and_period(1, hardware_profile.id, start, stop)
         return -1 if cost.nil?
 
-        price = cost.calculate( start, stop )
-        price += cost_per_partes if cost.billing_model == 3 
+        price = cost.calculate(start, stop)
+        price += cost_per_partes if cost.billing_model == 'per_property' 
         price
       end
 
@@ -90,9 +80,12 @@ module CostEngine
 
         # search costs for memory, cpu and storage
         costs = [ 
-         Cost.find_by_chargeable_type_and_chargeable_id(CHARGEABLE_TYPES[:hw_memory],  hardware_profile.memory_id,  start, stop),
-         Cost.find_by_chargeable_type_and_chargeable_id(CHARGEABLE_TYPES[:hw_cpu],     hardware_profile.cpu_id,     start, stop),
-         Cost.find_by_chargeable_type_and_chargeable_id(CHARGEABLE_TYPES[:hw_storage], hardware_profile.storage_id, start, stop)
+          Cost.for_chargeable_and_period(CHARGEABLE_TYPES[:hw_memory],  
+            hardware_profile.memory_id,  start, stop),
+          Cost.for_chargeable_and_period(CHARGEABLE_TYPES[:hw_cpu],
+            hardware_profile.cpu_id,     start, stop),
+          Cost.for_chargeable_and_period(CHARGEABLE_TYPES[:hw_storage], 
+            hardware_profile.storage_id, start, stop)
         ]
 
         costs.inject(0) { |sum,acost| sum + acost.calculate(start, stop) }
@@ -101,7 +94,7 @@ module CostEngine
         
     module Instance
       def cost
-        instance_hwp.cost rescue 0 # in the past instance_hwp was not set in Conductor, so we rescue from that
+        instance_hwp.cost rescue 0
       end
     end
     
