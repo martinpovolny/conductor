@@ -150,5 +150,7 @@ class HardwareProfileProperty < ActiveRecord::Base
     # If the form isn't filled out, it comes in as "", which we treat as nil:
     self.value = nil if self.value==""
   end
+
+  include CostEngine::Mixins::HardwareProfileProperty
 end
 

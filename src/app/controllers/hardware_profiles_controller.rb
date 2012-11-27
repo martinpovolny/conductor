@@ -229,18 +229,20 @@ class HardwareProfilesController < ApplicationController
       { :name => t('hardware_profiles.properties_headers.name'), :sort_attr => :name},
       { :name => t('hardware_profiles.properties_headers.unit'), :sort_attr => :unit},
       { :name => t('hardware_profiles.properties_headers.min_value'), :sort_attr => :value}]
+    @properties_header << { :name => t('hardware_profiles.properties_headers.cost'), :sort_attr => :value} if @hardware_profile.provider_hardware_profile?
     @hwp_properties = [@hardware_profile.memory, @hardware_profile.cpu, @hardware_profile.storage, @hardware_profile.architecture]
   end
 
   #TODO Update this method when moving to new HWP Model
   def find_matching_provider_hardware_profiles
-    @provider_hwps_header  = [
+    @provider_hwps_header = [
       { :name => t('hardware_profiles.provider_hwp_headers.provider_name'), :sort_attr => "provider.name" },
       { :name => t('hardware_profiles.provider_hwp_headers.hwp_name'), :sort_attr => :name },
       { :name => t('hardware_profiles.provider_hwp_headers.architecture'), :sort_attr => :architecture },
       { :name => t('hardware_profiles.provider_hwp_headers.memory'), :sort_attr => :memory},
       { :name => t('hardware_profiles.provider_hwp_headers.storage'), :sort_attr => :storage },
-      { :name => t('hardware_profiles.provider_hwp_headers.virtual_cpu'), :sort_attr => :cpu}
+      { :name => t('hardware_profiles.provider_hwp_headers.virtual_cpu'), :sort_attr => :cpu},
+      { :name => t('hardware_profiles.provider_hwp_headers.cost'), :sort_attr => :cost}
     ]
 
     begin

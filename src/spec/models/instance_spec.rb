@@ -379,4 +379,16 @@ describe Instance do
     errors.should_not be_empty
     errors.select {|e| e.include?("no Config Server available") }.should_not be_empty
   end
+
+#  describe "launch!" do
+#    it "should create instance_hwp" do
+#      @instance.stub!( taskomatik :: create_deltacloud_transition )
+#
+#      @instance 
+#
+#      @instance.launch!
+#
+#      @instance.instance_hwp should not be nil
+#    end
+#  end
 end

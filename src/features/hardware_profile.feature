@@ -48,6 +48,24 @@ Feature: Manage Hardware Profiles
     | Name      | Memory | CPU | Storage  | Architecture |
     | m1-small  | 1740   | 2   | 160      | i386         |
 
+  Scenario: Set cost for backend hardware profile
+    Given there are the following conductor hardware profiles:
+    | name      | memory | cpu |storage  | architecture |
+    | m1-small  | 1740   | 2   | 160     | i386         |
+    And the Hardare Profile "m1-small" has the following Provider Hardware Profiles:
+    | name      | memory | cpu |storage  | architecture |
+    | m1-small  | 1740   | 2   | 160     | i386         |
+    And I am on the hardware profiles page
+    When I follow "m1-small"
+    When I follow "m1-small"
+    Then I should see "Cost"
+    When I follow "edit_cost_button"
+    Then I should see "Assign Costs to Hardware Profile"
+    When I follow "change_bm_button"
+    Then I should see "Select Billing Model for Hardware Profile"
+    When I press "save_button"
+    Then I should see "Hardware Profile cost updated"
+
 #  Scenario: Search for hardware profiles
 #    Given there are the following conductor hardware profiles:
 #    | name      | memory | cpu |storage  | architecture |

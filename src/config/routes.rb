@@ -151,6 +151,15 @@ Conductor::Application.routes.draw do
     post :matching_provider_hardware_profiles, :on => :collection
   end
 
+  resources :costs, :only=>[] do
+    member do
+      get 'edit'
+      get 'edit_billing'
+      put 'update'
+      put 'update_billing'
+    end
+  end
+
   resources :providers do
     delete 'multi_destroy', :on => :collection
     post :filter, :on => :collection
