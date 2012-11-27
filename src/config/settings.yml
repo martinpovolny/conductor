@@ -21,7 +21,7 @@
   #   :consumer_secret: consumer_secret_here
 
 :session:
-  :timeout: 120 # minutes
+  :timeout: 15 # minutes
 
 :action_mailer:
   :delivery_method: sendmail # or smtp

@@ -10,7 +10,7 @@
         = cost_form.label :profile_cost, :class => 'em'
         = cost_form.text_field :price, :class => 'em'
 
-- if @hwp_cost.billing_model == 3
+- if @hwp_cost.billing_model == 'per_part'
   %fieldset
     %table
       %thead

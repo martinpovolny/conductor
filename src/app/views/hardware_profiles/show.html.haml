@@ -23,14 +23,14 @@
       - @hwp_properties.each do |hwpp|
         %tr
           %td
-            =hwpp.name.nil? ? "n/a" : hwpp.name
+            =hwpp.name.nil? ? "N/A" : hwpp.name
           %td
-            =hwpp.unit.nil? ? "n/a" : hwpp.unit
+            =hwpp.unit.nil? ? "N/A" : hwpp.unit
           %td
-            =hwpp.value.nil? ? "n/a" : hwpp.value
+            =hwpp.value.nil? ? "N/A" : hwpp.value
           - if @hardware_profile.provider_hardware_profile?
             %td
-              =hwpp.unit_price.nil? ? "n/a" : hwpp.unit_price 
+              =hwpp.unit_price.nil? ? "N/A" : hwpp.unit_price 
 
   - if @hardware_profile.provider_hardware_profile?
     %header
@@ -39,7 +39,7 @@
       %thead
         %tr
           %td
-            =@hardware_profile.unit_price.nil? ? "n/a" : @hardware_profile.unit_price
+            =@hardware_profile.unit_price.nil? ? "N/A" : @hardware_profile.unit_price
 
 - unless @hardware_profile.provider_hardware_profile?
   = render :partial => 'matching_provider_hardware_profiles'

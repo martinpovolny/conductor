@@ -504,6 +504,7 @@ en:
       download: Download
       owner: "Owner"
       shared_to: "Shared to"
+      cost_estimate: "Cost Estimate"
       error: "Error"
       n_a: "N/A"
     states:

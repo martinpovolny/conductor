@@ -346,7 +346,7 @@ class HardwareProfilesController < ApplicationController
     @properties_header = [
       { :name => t('hardware_profiles.properties_headers.name'), :sort_attr => :name},
       { :name => t('hardware_profiles.properties_headers.unit'), :sort_attr => :unit},
-      { :name => t('hardware_profiles.properties_headers.min_value'), :sort_attr => :value} ]
+      { :name => t('hardware_profiles.properties_headers.min_value'), :sort_attr => :value}]
     @properties_header << { :name => t('hardware_profiles.properties_headers.cost'), :sort_attr => :value} if @hardware_profile.provider_hardware_profile?
     @hwp_properties = [@hardware_profile.memory, @hardware_profile.cpu, @hardware_profile.storage, @hardware_profile.architecture]
   end

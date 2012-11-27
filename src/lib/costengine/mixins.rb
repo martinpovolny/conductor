@@ -60,13 +60,13 @@ module CostEngine
       #
       def cost
         start = instance[:time_last_running]
-        return -1 if start.nil?
+        return nil if start.nil?
         stop = instance[:time_last_stopped] || Time.now
     
         Rails.logger.debug('search cost for hwp: '+hardware_profile.inspect)
         Rails.logger.debug('instance_hwp:'+self.inspect)
         cost = Cost.for_chargeable_and_period(1, hardware_profile.id, start, stop)
-        return -1 if cost.nil?
+        return nil if cost.nil?
 
         price = cost.calculate(start, stop)
         price += cost_per_partes if cost.billing_model == 'per_property' 
@@ -94,13 +94,18 @@ module CostEngine
         
     module Instance
       def cost
-        instance_hwp.cost rescue 0
+        # NONE: due to a bug (fixed) previously instances did not have instance_hwp
+        # so we need to rescue from that
+        instance_hwp.cost rescue nil
       end
     end
     
     module Deployment
       def cost
-        instances.inject(0) { |sum, instance| sum + instance.cost }
+        instances.inject(0) do |sum, instance| 
+          return nil if instance.cost.nil? 
+          sum + instance.cost
+        end
       end
     end
   end
