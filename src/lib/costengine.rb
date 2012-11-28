@@ -14,7 +14,6 @@
 #   limitations under the License.
 #
 
-require "costengine/version"
 require "costengine/billingmodel"
 require "costengine/mixins"
 
