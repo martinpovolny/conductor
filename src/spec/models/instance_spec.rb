@@ -380,15 +380,19 @@ describe Instance do
     errors.select {|e| e.include?("no Config Server available") }.should_not be_empty
   end
 
-#  describe "launch!" do
-#    it "should create instance_hwp" do
-#      @instance.stub!( taskomatik :: create_deltacloud_transition )
-#
-#      @instance 
-#
-#      @instance.launch!
-#
-#      @instance.instance_hwp should not be nil
-#    end
-#  end
+  describe "launch!" do
+    it "should create instance_hwp" do
+      Taskomatic.stub!(:create_dcloud_instance).and_return(true)
+      Taskomatic.stub!(:handle_instance_state).and_return(true)
+      Taskomatic.stub!(:handle_dcloud_error).and_return(true)
+
+      instance_match = FactoryGirl.build(:instance_match)
+      user_for_launch = FactoryGirl.create(:admin_permission).user
+
+      @instance.launch!(instance_match, user_for_launch, nil, nil)
+      @instance.reload
+
+      @instance.instance_hwp.should_not be_nil
+    end
+  end
 end
