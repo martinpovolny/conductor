@@ -149,14 +149,11 @@ Conductor::Application.routes.draw do
     delete 'multi_destroy', :on => :collection
     post :filter, :on => :collection
     post :matching_provider_hardware_profiles, :on => :collection
-  end
-
-  resources :costs, :only=>[] do
     member do
-      get 'edit'
-      get 'edit_billing'
-      put 'update'
-      put 'update_billing'
+      get 'edit_cost'
+      get 'edit_cost_billing'
+      put 'update_cost'
+      put 'update_cost_billing'
     end
   end
 

@@ -7,8 +7,8 @@
 
 %section.content-section
   %header
-    %h2=t('hardware_profiles.edit.edit_hwp_billing_model')
+    %h2=t('hardware_profiles.edit.edit_hwp_cost')
 
   .content
-    = form_for @hardware_profile, :url => update_billing_cost_path(@hardware_profile), :html => { :multipart => true, :class => 'generic' } do |hwp_form|
-      = render :partial => "cost_form_billing", :locals => { :hwp_form => hwp_form }
+    = form_for @hardware_profile, :url => update_cost_hardware_profile_path(@hardware_profile), :html => { :multipart => true, :class => 'generic' } do |hwp_form|
+      = render :partial => "cost_form", :locals => { :hwp_form => hwp_form }
