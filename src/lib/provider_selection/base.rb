@@ -117,7 +117,7 @@ module ProviderSelection
 
       common_accounts = []
       instance_matches_grouped_by_instances.each_with_index do |instance_matches, index|
-        accounts = instance_matches.collect do |instance_match| 
+        accounts = instance_matches.collect do |instance_match|
           ProviderAccWithHwp.new(instance_match.provider_account, instance_match.hardware_profile)
         end
 

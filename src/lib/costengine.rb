@@ -27,8 +27,8 @@ module CostEngine
     HardwareProfile.extend(CostEngine::Mixins::HardwareProfileClass)
     HardwareProfileProperty.send(:include, CostEngine::Mixins::HardwareProfileProperty)
   end
-  
-  CHARGEABLE_TYPES = { 
+
+  CHARGEABLE_TYPES = {
     :hardware_profile => 1,
     :hw_cpu           => 2,
     :hw_memory        => 3,

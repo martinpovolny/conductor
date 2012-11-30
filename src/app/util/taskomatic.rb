@@ -163,7 +163,7 @@ module Taskomatic
       :hwp_memory  => instance.instance_hwp.memory,
       :hwp_cpu     => instance.instance_hwp.cpu,
       :hwp_storage => instance.instance_hwp.storage,
-      :keyname     => (instance.instance_key.name rescue nil) 
+      :keyname     => (instance.instance_key.name rescue nil)
     }
     client_args.merge!({:realm_id => match.realm.external_key}) if (match.realm.external_key.present? rescue false)
     client_args.merge!({:user_data => instance.user_data}) if instance.user_data.present?

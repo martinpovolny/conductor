@@ -14,14 +14,14 @@
 #   limitations under the License.
 
 class Cost < ActiveRecord::Base
-  attr_accessible :chargeable_id, :chargeable_type, :valid_from, :valid_to, 
+  attr_accessible :chargeable_id, :chargeable_type, :valid_from, :valid_to,
                   :price, :billing_model
 
-  validates_presence_of :chargeable_id, :chargeable_type, :billing_model, 
+  validates_presence_of :chargeable_id, :chargeable_type, :billing_model,
                         :valid_from
   # valid_to might be null resulting in unlimited validity
   # price might be null for PER_PART billing model
-  
+
   validate :validate_by_billing_model
 
   def validate_by_billing_model

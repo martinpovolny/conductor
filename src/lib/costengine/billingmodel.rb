@@ -40,14 +40,14 @@ module CostEngine
       (find(model_name)::HUMAN_NAME rescue 'none')
     end
 
-    # returns list of billing models as a hash of 
+    # returns list of billing models as a hash of
     #   human readable name => underscored name
     # used as view helper
     #
     # FIXME: have to call gettext on these, probably at the view level?
     #
     def self.options_for_select
-      BILLING_MODELS.inject(OptionsForSelect.new) do |options,model| 
+      BILLING_MODELS.inject(OptionsForSelect.new) do |options,model|
         options.merge!(model::HUMAN_NAME => model.to_s.underscore.split('/').last)
       end
     end
@@ -67,7 +67,7 @@ module CostEngine
     # follows implementation of various billing models:
     #  * pay per day/hour/wallclock hour/[minute?]
     #  * later may need per start/stop/whatever
-    
+
     # bills per wall clock hour i.e. running from 11:55 to 12:05 is billed as 2
     # units
     #

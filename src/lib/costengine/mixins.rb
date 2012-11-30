@@ -40,7 +40,7 @@ module CostEngine
         hwp_cost.close unless hwp_cost.nil?
 
         if all
-          ::HardwareProfile::chargeables.each do |what| 
+          ::HardwareProfile::chargeables.each do |what|
             hwp_prop_cost = send(what).cost_now(t)
             hwp_prop_cost.close unless hwp_prop_cost.nil?
           end
@@ -49,7 +49,7 @@ module CostEngine
     end
 
     module HardwareProfileProperty
-      def chargeable_type 
+      def chargeable_type
         CostEngine::CHARGEABLE_TYPES[('hw_'+name).intern]
       end
 
@@ -78,14 +78,14 @@ module CostEngine
         start = instance[:time_last_running]
         return nil if start.nil?
         stop = instance[:time_last_stopped] || Time.now
-    
+
         Rails.logger.debug('search cost for hwp: '+hardware_profile.inspect)
         Rails.logger.debug('instance_hwp:'+self.inspect)
         cost = Cost.for_chargeable_and_period(1, hardware_profile.id, start, stop)
         return nil if cost.nil?
 
         price = cost.calculate(start, stop)
-        price += cost_per_partes if cost.billing_model == 'per_property' 
+        price += cost_per_partes if cost.billing_model == 'per_property'
         price
       end
 
@@ -95,19 +95,19 @@ module CostEngine
         stop  = instance[:time_last_stopped] || Time.now
 
         # search costs for memory, cpu and storage
-        costs = [ 
-          Cost.for_chargeable_and_period(CHARGEABLE_TYPES[:hw_memory],  
+        costs = [
+          Cost.for_chargeable_and_period(CHARGEABLE_TYPES[:hw_memory],
             hardware_profile.memory_id,  start, stop),
           Cost.for_chargeable_and_period(CHARGEABLE_TYPES[:hw_cpu],
             hardware_profile.cpu_id,     start, stop),
-          Cost.for_chargeable_and_period(CHARGEABLE_TYPES[:hw_storage], 
+          Cost.for_chargeable_and_period(CHARGEABLE_TYPES[:hw_storage],
             hardware_profile.storage_id, start, stop)
         ]
 
         costs.inject(0) { |sum,acost| sum + acost.calculate(start, stop) }
       end
     end
-        
+
     module Instance
       def cost
         # NONE: due to a bug (fixed) previously instances did not have instance_hwp
@@ -115,11 +115,11 @@ module CostEngine
         instance_hwp.cost rescue nil
       end
     end
-    
+
     module Deployment
       def cost
-        instances.inject(0) do |sum, instance| 
-          return nil if instance.cost.nil? 
+        instances.inject(0) do |sum, instance|
+          return nil if instance.cost.nil?
           sum + instance.cost
         end
       end

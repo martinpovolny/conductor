@@ -47,12 +47,12 @@ class CostsController < ApplicationController
 
     @hwp_cost = @hardware_profile.cost_now || Cost.new
     @hwp_prop_costs = {}
-    HardwareProfile::chargeables.each { |what| 
+    HardwareProfile::chargeables.each { |what|
       @hwp_prop_costs[what] = @hardware_profile.send(what).cost_now || Cost.new
     }
 
     @header  = [
-      { :name => t('hardware_profiles.properties_headers.name'), 
+      { :name => t('hardware_profiles.properties_headers.name'),
         :sort_attr => :name},
       { :name => t('hardware_profiles.properties_headers.billing_model'),
         :sort_attr => :billing_model},
@@ -74,7 +74,7 @@ class CostsController < ApplicationController
 
     begin
       # set hardware profile cost
-      Cost.create!( 
+      Cost.create!(
         :chargeable_id   => @hardware_profile.id,
         :chargeable_type => CostEngine::CHARGEABLE_TYPES[:hardware_profile],
         :price           => 0,
@@ -104,7 +104,7 @@ class CostsController < ApplicationController
     #begin
       # set hardware profile cost
       #cost_now = @hardware_profile.cost_now
-      Cost.create!( 
+      Cost.create!(
         :chargeable_id   => @hardware_profile.id,
         :chargeable_type => CostEngine::CHARGEABLE_TYPES[:hardware_profile],
         :price           => (params[:cost][:price] rescue 0),
@@ -112,7 +112,7 @@ class CostsController < ApplicationController
         :valid_to        => nil,
         :billing_model   => billing_model = params[:cost][:billing_model]
       )
-      
+
       if billing_model == 'per_property'
         # set hardware profile properties costs
         HardwareProfile::chargeables.each do |type|
