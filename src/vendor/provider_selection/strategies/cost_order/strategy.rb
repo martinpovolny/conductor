@@ -22,33 +22,42 @@ module ProviderSelection
         include ProviderSelection::ChainableStrategy::InstanceMethods
 
         @default_options = {
-          :impact => 1
+          :impact => 1,
         }
 
         def self.default_options
           @default_options
         end
 
-        def penalty_for_cost(hardware_profile,mode=:linear)
+        def reward_for_cost(hardware_profile)
           return 0 if (cost = hardware_profile.cost_now).nil?
-          case mode
-          when :linear
-            cost.price * 1000
-          when :logaritmic
-            Math.log(cost.price) * 1000
-          when :polynomial
-            cost.price**2 * 1000
+
+          mode = @options.key?(:impact) ? @options[:impact] : 1
+          base = 100 # may become a config option in the future
+
+          penalty = case mode
+          when 1
+            cost.price*base
+          when 2
+            Math.log(cost.price*base)*10
+          when 3
+            (cost.price*base/10)**2
+          else
+            0
           end
+          penalty =  100 if penalty>100
+          penalty = -100 if penalty<-100
+
+          100-penalty
         end
 
         def calculate
           rank = @strategies.calculate
-          Rails.logger.debug( ['CostOrder::Strategy::calculate', rank] )
-
-          rank.priority_groups.each do |priority_group|
-            priority_group.matches.each do |match|
-              match.penalize_by(penalty_for_cost(match.hardware_profile))
-            end
+          rank.default_priority_group.matches.each do |match|
+            old_score = match.calculated_score
+            match.reward_by(reward = reward_for_cost(match.hardware_profile))
+            cost = match.hardware_profile.cost_now.price rescue nil
+            Rails.logger.debug("match hwp: #{match.hardware_profile.id}, cost: #{cost}, orig score: #{old_score}, reward for cost: #{reward}, new score: #{match.score}")
           end
 
           rank
