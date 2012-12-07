@@ -48,7 +48,8 @@ describe ProviderSelection::Strategies::CostOrder::Strategy do
     rank = strategy_chain.calculate
 
     # if we order the matches by score
-    matches = rank.default_priority_group.matches.sort_by!{ |match| match.score }
+    #matches = rank.default_priority_group.matches.sort_by!{ |match| match.score }
+    matches = rank.default_priority_group.matches.sort!{ |m1,m2| m1.score <=> m2.score }
 
     # then the first one should be for the cheaper hardware_profile etc.
     matches[0].hardware_profile.unit_price.should < matches[1].hardware_profile.unit_price
